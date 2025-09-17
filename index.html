@@ -77,13 +77,19 @@ tfoot td {
   color: red;
 }
 
+thead th:nth-child(1) input { background-color: #2c3e50; color: #fff; }
+thead th:nth-child(2) input { background-color: #2c3e50; color: #fff; }
+thead th:nth-child(3) input { background-color: #2c3e50; color: #fff; }
+thead th:nth-child(4) input { background-color: #2c3e50; color: #fff; }
+
+
 /* tombol reset */
 .reset-btn {
   width: 100%;
   border-radius: 0;
   padding: 15px;
   font-size: 20px;
-  background: #2c3e50;
+  background: red;
   color: white;
   border: none;
   cursor: pointer;
@@ -105,25 +111,21 @@ tfoot td {
   font-weight: bold;
   background: #ecf0f1;
   position: sticky;
-  bottom: 60px;
+  bottom: 10px;
   z-index: 1;
 }
 
 
 .reset-btn {
   position: fixed;
-  bottom: env(safe-area-inset-bottom, 0); /* default 0 jika env tidak tersedia */
+  bottom: 0;
   left: 0;
   width: 100%;
   height: 60px;
-  border-radius: 0;
-  padding: 15px;
   font-size: 20px;
-  background: #2c3e50;
-  color: white;
-  border: none;
-  cursor: pointer;
+  border-radius: 0; /* ujung kotak */
 }
+
 
 .table-container {
   height: calc(100vh - 70px);
@@ -135,39 +137,32 @@ tfoot td {
 
 </head>
 <body>
-  <div class="table-container" style="height: calc(100vh - 70px); overflow-y: auto;">
+  <!-- Tabel scrollable -->
+  <div class="table-container" style="height: calc(100vh - 120px); overflow-y: auto;">
     <table class="table table-bordered text-center align-middle mb-0" id="scoreTable">
-      <thead class="table-primary">
+      <thead>
         <tr>
-          <th>
-            <input class="form-control text-center fw-bold border-0 rounded-0 h-100 w-100" type="text" value="A" onchange="updateName(0, this.value)" />
-          </th>
-          <th>
-            <input class="form-control text-center fw-bold border-0 rounded-0 h-100 w-100" type="text" value="B" onchange="updateName(1, this.value)" />
-          </th>
-          <th>
-            <input class="form-control text-center fw-bold border-0 rounded-0 h-100 w-100" type="text" value="C" onchange="updateName(2, this.value)" />
-          </th>
-          <th>
-            <input class="form-control text-center fw-bold border-0 rounded-0 h-100 w-100" type="text" value="D" onchange="updateName(3, this.value)" />
-          </th>
+          <th style="width:25%"><input type="text" value="A" onchange="updateName(0, this.value)" class="form-control" /></th>
+          <th style="width:25%"><input type="text" value="B" onchange="updateName(1, this.value)" class="form-control" /></th>
+          <th style="width:25%"><input type="text" value="C" onchange="updateName(2, this.value)" class="form-control" /></th>
+          <th style="width:25%"><input type="text" value="D" onchange="updateName(3, this.value)" class="form-control" /></th>
         </tr>
       </thead>
-
       <tbody id="scoreBody"></tbody>
-
-      <tfoot>
-        <tr class="table-light">
-          <td id="total0">0</td>
-          <td id="total1">0</td>
-          <td id="total2">0</td>
-          <td id="total3">0</td>
-        </tr>
-      </tfoot>
     </table>
   </div>
 
+  <!-- Footer total poin (4 kolom tetap) -->
+  <div class="fixed-footer-totals d-flex" style="position: fixed; bottom: 60px; width: 100%; background: #2c3e50; padding: 10px 0; color: #fff; font-weight: bold; font-size: 18px; justify-content: space-between; box-sizing: border-box;">
+    <div style="width:25%; text-align:center; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;" id="total0">0</div>
+    <div style="width:25%; text-align:center; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;" id="total1">0</div>
+    <div style="width:25%; text-align:center; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;" id="total2">0</div>
+    <div style="width:25%; text-align:center; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;" id="total3">0</div>
+  </div>
+
+  <!-- Tombol reset -->
   <button class="btn btn-danger reset-btn" onclick="resetAll()">Reset</button>
+
 </body>
 
 
@@ -178,7 +173,7 @@ tfoot td {
   let totals = [0, 0, 0, 0];
   const scoreBody = document.getElementById("scoreBody");
   let playerNames = ["A", "B", "C", "D"];
-  const DEFAULT_ROWS = 9; // jumlah baris awal
+  const DEFAULT_ROWS = 10; // jumlah baris awal
 
   function addRow() {
     let row = document.createElement("tr");
