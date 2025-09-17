@@ -39,7 +39,7 @@ tbody tr:nth-child(odd) {
   background-color: #ffffff; /* putih */
 }
 tbody tr:nth-child(even) {
-  background-color: #ff0000; /* abu muda */
+  background-color: #525252; /* abu muda */
 }
 
 /* input poin */
@@ -92,41 +92,77 @@ tfoot td {
   background: #1a242f;
 }
 
+thead th {
+  background: #2c3e50;
+  color: #fff;
+  position: sticky;
+  top: 0; /* tetap di atas saat scroll */
+  z-index: 2;
+}
+
+tfoot td {
+  font-size: 22px;
+  font-weight: bold;
+  background: #ecf0f1;
+  position: sticky;
+  bottom: 0; /* tetap di bawah saat scroll */
+  z-index: 1;
+}
+
+.reset-btn {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  border-radius: 0;
+  padding: 15px;
+  font-size: 20px;
+  background: #2c3e50;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+
+
 </style>
 
 </head>
 <body>
-  <table class="table table-bordered text-center align-middle mb-0" id="scoreTable">
-    <thead class="table-primary">
-      <tr>
-        <th>
-          <input class="form-control text-center fw-bold border-0 rounded-0 h-100 w-100" type="text" value="Pemain 1" onchange="updateName(0, this.value)" />
-        </th>
-        <th>
-          <input class="form-control text-center fw-bold border-0 rounded-0 h-100 w-100" type="text" value="Pemain 2" onchange="updateName(1, this.value)" />
-        </th>
-        <th>
-          <input class="form-control text-center fw-bold border-0 rounded-0 h-100 w-100" type="text" value="Pemain 3" onchange="updateName(2, this.value)" />
-        </th>
-        <th>
-          <input class="form-control text-center fw-bold border-0 rounded-0 h-100 w-100" type="text" value="Pemain 4" onchange="updateName(3, this.value)" />
-        </th>
-      </tr>
-    </thead>
+  <div class="table-container" style="height: calc(100vh - 70px); overflow-y: auto;">
+    <table class="table table-bordered text-center align-middle mb-0" id="scoreTable">
+      <thead class="table-primary">
+        <tr>
+          <th>
+            <input class="form-control text-center fw-bold border-0 rounded-0 h-100 w-100" type="text" value="A" onchange="updateName(0, this.value)" />
+          </th>
+          <th>
+            <input class="form-control text-center fw-bold border-0 rounded-0 h-100 w-100" type="text" value="B" onchange="updateName(1, this.value)" />
+          </th>
+          <th>
+            <input class="form-control text-center fw-bold border-0 rounded-0 h-100 w-100" type="text" value="C" onchange="updateName(2, this.value)" />
+          </th>
+          <th>
+            <input class="form-control text-center fw-bold border-0 rounded-0 h-100 w-100" type="text" value="D" onchange="updateName(3, this.value)" />
+          </th>
+        </tr>
+      </thead>
 
-    <tbody id="scoreBody"></tbody>
+      <tbody id="scoreBody"></tbody>
 
-    <tfoot>
-      <tr class="table-light">
-        <td id="total0">0</td>
-        <td id="total1">0</td>
-        <td id="total2">0</td>
-        <td id="total3">0</td>
-      </tr>
-    </tfoot>
-  </table>
+      <tfoot>
+        <tr class="table-light">
+          <td id="total0">0</td>
+          <td id="total1">0</td>
+          <td id="total2">0</td>
+          <td id="total3">0</td>
+        </tr>
+      </tfoot>
+    </table>
+  </div>
 
   <button class="btn btn-danger reset-btn" onclick="resetAll()">Reset</button>
+</body>
+
 
   <!-- Bootstrap JS -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
@@ -135,7 +171,7 @@ tfoot td {
   let totals = [0, 0, 0, 0];
   const scoreBody = document.getElementById("scoreBody");
   let playerNames = ["A", "B", "C", "D"];
-  const DEFAULT_ROWS = 5; // jumlah baris awal
+  const DEFAULT_ROWS = 9; // jumlah baris awal
 
   function addRow() {
     let row = document.createElement("tr");
