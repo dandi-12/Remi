@@ -133,6 +133,19 @@ tfoot td {
   padding-bottom: 70px; /* ruang untuk tombol reset */
 }
 
+/* efek coret umum */
+.dicoret {
+  text-decoration: line-through;
+  color: red;
+}
+
+/* khusus untuk input */
+input.dicoret {
+  text-decoration: line-through !important;
+  color: red !important;
+}
+
+
 </style>
 
 </head>
@@ -169,11 +182,85 @@ tfoot td {
   <!-- Bootstrap JS -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
- <script>
+
+<script>
   let totals = [0, 0, 0, 0];
   const scoreBody = document.getElementById("scoreBody");
   let playerNames = ["A", "B", "C", "D"];
   const DEFAULT_ROWS = 10; // jumlah baris awal
+
+  function saveData() {
+    let data = {
+      players: playerNames,
+      rows: [],
+    };
+
+    Array.from(scoreBody.rows).forEach((row) => {
+      let rowData = [];
+      row.querySelectorAll("input").forEach((inp) => {
+        rowData.push({
+          value: inp.value,
+          dicoret: inp.classList.contains("dicoret"),
+        });
+      });
+      data.rows.push(rowData);
+    });
+
+    localStorage.setItem("remiScore", JSON.stringify(data));
+  }
+
+  function loadData() {
+    let data = localStorage.getItem("remiScore");
+    if (!data) {
+      // jika belum ada data tersimpan, buat baris default
+      for (let i = 0; i < DEFAULT_ROWS; i++) {
+        addRow();
+      }
+      return;
+    }
+
+    data = JSON.parse(data);
+    playerNames = data.players || ["A", "B", "C", "D"];
+
+    // update nama pemain di header
+    playerNames.forEach((name, i) => {
+      document.querySelector(`thead th:nth-child(${i + 1}) input`).value = name;
+    });
+
+    // isi ulang tabel
+    scoreBody.innerHTML = "";
+    data.rows.forEach((rowData) => {
+      let row = document.createElement("tr");
+      rowData.forEach((cellData, i) => {
+        let cell = document.createElement("td");
+        cell.className = "p-0";
+        cell.setAttribute("data-label", playerNames[i]);
+
+        let wrapper = document.createElement("div");
+        wrapper.className = "d-flex flex-column h-100";
+
+        let input = document.createElement("input");
+        input.type = "text";
+        input.value = cellData.value || "";
+        input.className =
+          "form-control text-center border-0 rounded-0 w-100 flex-grow-1";
+        input.dataset.player = i;
+        input.addEventListener("input", handleInput);
+
+        // setelah set className, baru tambahkan coretan
+        if (cellData.dicoret) {
+          input.classList.add("dicoret");
+        }
+
+        wrapper.appendChild(input);
+        cell.appendChild(wrapper);
+        row.appendChild(cell);
+      });
+      scoreBody.appendChild(row);
+    });
+
+    hitungUlang();
+  }
 
   function addRow() {
     let row = document.createElement("tr");
@@ -186,8 +273,9 @@ tfoot td {
       wrapper.className = "d-flex flex-column h-100";
 
       let input = document.createElement("input");
-      input.type = "text"; // supaya bisa isi angka atau kata "coret"
-      input.className = "form-control text-center border-0 rounded-0 w-100 flex-grow-1";
+      input.type = "text";
+      input.className =
+        "form-control text-center border-0 rounded-0 w-100 flex-grow-1";
       input.dataset.player = i;
       input.addEventListener("input", handleInput);
 
@@ -207,6 +295,7 @@ tfoot td {
     }
     hitungUlang();
     cekTambahBaris();
+    saveData(); // simpan tiap ada perubahan
   }
 
   function hitungUlang() {
@@ -238,7 +327,10 @@ tfoot td {
       let hasValue = Array.from(lastRow.querySelectorAll("input")).some(
         (inp) => inp.value !== ""
       );
-      if (hasValue) addRow();
+      if (hasValue) {
+        addRow();
+        saveData();
+      }
     }
   }
 
@@ -248,29 +340,30 @@ tfoot td {
       let cell = row.cells[index];
       if (cell) cell.setAttribute("data-label", playerNames[index]);
     });
+    saveData();
   }
 
   function resetAll() {
-  if (!confirm("Apakah Anda yakin ingin mereset semua poin?")) {
-    return; // batal reset jika user tekan Cancel
+    if (!confirm("Apakah Anda yakin ingin mereset semua poin?")) {
+      return;
+    }
+
+    totals = [0, 0, 0, 0];
+    scoreBody.innerHTML = "";
+    for (let i = 0; i < 4; i++) {
+      document.getElementById("total" + i).textContent = 0;
+    }
+    for (let i = 0; i < DEFAULT_ROWS; i++) {
+      addRow();
+    }
+    saveData();
   }
 
-  totals = [0, 0, 0, 0];
-  scoreBody.innerHTML = "";
-  for (let i = 0; i < 4; i++) {
-    document.getElementById("total" + i).textContent = 0;
-  }
-  for (let i = 0; i < DEFAULT_ROWS; i++) {
-    addRow();
-  }
-}
-
-
-  // render default rows
-  for (let i = 0; i < DEFAULT_ROWS; i++) {
-    addRow();
-  }
+  // load data saat pertama kali
+  loadData();
 </script>
+
+
 
 </body>
 </html>
